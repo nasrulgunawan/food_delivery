@@ -13,11 +13,13 @@ defmodule FoodDelivery.Accounts.UserToken do
   @change_email_validity_in_days 7
   @session_validity_in_days 60
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "users_tokens" do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
-    belongs_to :user, FoodDelivery.Accounts.User
+    belongs_to :user, FoodDelivery.Accounts.User, type: :binary_id
 
     timestamps(type: :utc_datetime, updated_at: false)
   end
@@ -128,6 +130,7 @@ defmodule FoodDelivery.Accounts.UserToken do
 
   defp days_for_context("confirm"), do: @confirm_validity_in_days
   defp days_for_context("reset_password"), do: @reset_password_validity_in_days
+  defp days_for_context("api-token"), do: @session_validity_in_days
 
   @doc """
   Checks if the token is valid and returns its underlying lookup query.

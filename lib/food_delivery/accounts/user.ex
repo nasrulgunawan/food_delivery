@@ -2,14 +2,26 @@ defmodule FoodDelivery.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   schema "users" do
     field :email, :string
+    field :name, :string
+    field :phone, :string
+    field :photo, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
     timestamps(type: :utc_datetime)
+  end
+
+  @doc false
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:email, :name, :phone, :photo])
+    |> validate_required([:name, :name, :phone, :photo])
   end
 
   @doc """
@@ -37,7 +49,7 @@ defmodule FoodDelivery.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password, :name, :phone, :photo])
     |> validate_email(opts)
     |> validate_password(opts)
   end

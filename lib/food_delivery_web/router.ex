@@ -4,7 +4,7 @@ defmodule FoodDeliveryWeb.Router do
   import FoodDeliveryWeb.UserAuth
 
   pipeline :browser do
-    plug :accepts, ["html"]
+    plug :accepts, ~w[html]
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, html: {FoodDeliveryWeb.Layouts, :root}
@@ -14,7 +14,7 @@ defmodule FoodDeliveryWeb.Router do
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug :accepts, ~w[json]
   end
 
   scope "/", FoodDeliveryWeb do
@@ -81,5 +81,28 @@ defmodule FoodDeliveryWeb.Router do
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
+  end
+
+  scope "/api/v1", FoodDeliveryWeb do
+    pipe_through [:api]
+
+    post "/users/register", UserController, :create
+    post "/users/log_in", UserSessionController, :create
+    post "/drivers", DriverController, :create
+
+    resources "/restaurants", RestaurantController, only: [:index, :show]
+    resources "/products", ProductController, only: [:index, :show]
+  end
+
+  scope "/api/v1/", FoodDeliveryWeb do
+    pipe_through [:api, :fetch_api_user]
+
+    get "/users/:id", UserController, :show
+    put "/users/:id", UserController, :update
+
+    resources "/addresses", AddressController
+    resources "/drivers", DriverController, except: [:create]
+    resources "/restaurants", RestaurantController, except: [:index, :show]
+    resources "/products", ProductController, except: [:index, :show]
   end
 end

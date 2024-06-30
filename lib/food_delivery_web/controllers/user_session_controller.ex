@@ -34,6 +34,21 @@ defmodule FoodDeliveryWeb.UserSessionController do
     end
   end
 
+  defp create(%{request_path: "/api/v1/" <> _rest} = conn, user_params, _info) do
+    %{"email" => email, "password" => password} = user_params
+
+    if user = Accounts.get_user_by_email_and_password(email, password) do
+      token = Accounts.create_user_api_token(user)
+
+      conn
+      |> put_status(:created)
+      |> render(:show, user: user, token: token)
+    else
+      conn
+      |> render(:error, error: "Invalid email or password")
+    end
+  end
+
   def delete(conn, _params) do
     conn
     |> put_flash(:info, "Logged out successfully.")

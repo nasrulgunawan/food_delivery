@@ -9,7 +9,11 @@ import Config
 
 config :food_delivery,
   ecto_repos: [FoodDelivery.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [
+    timestamp_type: :utc_datetime,
+    api_prefix: "/api/v1",
+    binary_id: true
+  ]
 
 # Configures the endpoint
 config :food_delivery, FoodDeliveryWeb.Endpoint,
